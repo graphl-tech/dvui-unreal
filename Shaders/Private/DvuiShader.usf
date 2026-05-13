@@ -1,0 +1,37 @@
+// dvui-unreal: trivial shader matching the canonical dvui backend pipeline
+// (web/sdl): output = texture * vertex_color, premultiplied alpha blend.
+// No sRGB games, no Slate-style grayscale auto-detection.
+
+#include "/Engine/Public/Platform.ush"
+
+struct FDvuiVertexInput
+{
+    float2 Position : ATTRIBUTE0;
+    float2 UV       : ATTRIBUTE1;
+    float4 Color    : ATTRIBUTE2;
+};
+
+struct FDvuiInterpolants
+{
+    float4 Position : SV_POSITION;
+    float2 UV       : TEXCOORD0;
+    float4 Color    : COLOR0;
+};
+
+float4x4 ProjectionMatrix;
+
+void MainVS(FDvuiVertexInput In, out FDvuiInterpolants Out)
+{
+    Out.Position = mul(float4(In.Position, 0.0, 1.0), ProjectionMatrix);
+    Out.UV = In.UV;
+    Out.Color = In.Color; // u8x4 normalized to [0,1] by the IA
+}
+
+Texture2D ElementTexture;
+SamplerState ElementSampler;
+
+float4 MainPS(FDvuiInterpolants In) : SV_Target0
+{
+    float4 Tex = ElementTexture.Sample(ElementSampler, In.UV);
+    return Tex * In.Color;
+}

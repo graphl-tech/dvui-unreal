@@ -1,0 +1,29 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "DVUI for Unreal",
+	"Description": "Integration of DVUI (immediate-mode Zig GUI framework) with Unreal Engine",
+	"Category": "UI",
+	"CreatedBy": "DVUI-Unreal Contributors",
+	"CreatedByURL": "https://github.com/MichaelBelousov",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "DVUIUnreal",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit",
+			"PlatformAllowList": [
+				"Linux",
+				"Win64"
+			]
+		}
+	],
+	"Plugins": []
+}

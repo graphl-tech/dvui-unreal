@@ -1,0 +1,22 @@
+.{
+    .fingerprint = 0x581f3439c736bfe8,
+    .name = .dvui_unreal_backend,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.13.0",
+
+    .dependencies = .{
+        .dvui = .{
+            .url = "git+https://github.com/foxnne/dvui-dev#35ab51f4c37516184a87776f4f1ed009d0ac3f69",
+            .hash = "dvui-0.4.0-dev-AQFJmQkJ3wB-HYXnyWyjvckSRyYAtk8DavH0le0Ykg2K",
+        },
+        .dvui_unreal_sample_app = .{
+            .path = "../dvui-unreal-sample-app",
+        },
+    },
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

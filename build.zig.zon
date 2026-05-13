@@ -1,0 +1,22 @@
+.{
+    .name = .dvui_unreal,
+    .version = "0.1.0",
+    .fingerprint = 0x1af546caae312a65,
+    .minimum_zig_version = "0.13.0",
+
+    .dependencies = .{
+        .dvui_unreal_backend = .{
+            .path = "ThirdParty/dvui-unreal-backend",
+        },
+    },
+
+    // Files exposed to consumers via b.dependency().path("..."). The
+    // templating helper reads from Source/, Shaders/, and the .uplugin.
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "DVUIUnreal.uplugin",
+        "Source",
+        "Shaders",
+    },
+}

@@ -1,0 +1,28 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.6",
+	"Category": "",
+	"Description": "Test harness for the DVUIUnreal plugin (smoke + screenshot verification)",
+	"Modules": [
+		{
+			"Name": "DVUITest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG",
+				"DVUIUnreal"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "DVUIUnreal",
+			"Enabled": true
+		},
+		{
+			"Name": "PythonScriptPlugin",
+			"Enabled": true
+		}
+	]
+}

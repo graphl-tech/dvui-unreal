@@ -1,0 +1,10 @@
+# Build outputs
+packaged/
+Binaries/
+Intermediate/
+Saved/
+Config/FilterPlugin.ini
+
+# Zig build artifacts
+zig-out/
+.zig-cache/

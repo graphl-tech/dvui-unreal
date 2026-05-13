@@ -1,0 +1,12 @@
+.{
+    .name = .dvui_unreal_sample_app,
+    .version = "0.1.0",
+    .fingerprint = 0x1b3c7f23aefd0e48,
+    .minimum_zig_version = "0.13.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
