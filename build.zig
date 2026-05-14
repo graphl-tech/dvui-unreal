@@ -117,12 +117,19 @@ pub fn addUnrealPlugin(b: *std.Build, opts: UnrealPluginOptions) UnrealPlugin {
         .use_llvm = opts.use_llvm,
     });
 
-    // Install the shared lib alongside the C++ source under
-    // Source/<Module>/lib/. On Linux that's `lib<slug>_dvui.so`; on
-    // Windows Zig also emits a `<slug>_dvui.lib` import library next to
-    // the .dll — Build.cs links against the .lib at link time and ld.so /
-    // the Windows loader picks up the .so/.dll at runtime.
-    const lib_subdir = b.fmt("{s}/Source/{s}/lib", .{ subdir, module_name });
+    // Install the shared lib into the UE platform-specific Binaries dir
+    // — the same directory where UBT puts `libUnrealEditor-<Module>.so`.
+    // That way `${ORIGIN}` of the editor module's .so already covers our
+    // lib at runtime, with no RPATH plumbing in Build.cs needed (which
+    // matters because UBT's `PublicRuntimeLibraryPaths` bakes absolute
+    // project paths into the RPATH that don't survive project moves).
+    const ue_platform: []const u8 = switch (opts.target.result.os.tag) {
+        .linux => "Linux",
+        .windows => "Win64",
+        .macos => "Mac",
+        else => @panic("dvui_unreal: unsupported target OS for UE plugin"),
+    };
+    const lib_subdir = b.fmt("{s}/Binaries/{s}", .{ subdir, ue_platform });
     const install_lib = b.addInstallArtifact(lib, .{
         .dest_dir = .{ .override = .{ .custom = lib_subdir } },
     });
@@ -300,16 +307,24 @@ fn renderBuildCs(b: *std.Build, module_name: []const u8, slug: []const u8) []con
         \\        // each dependent's .so via UBT's PublicAdditionalLibraries
         \\        // propagation, giving each its own copy and breaking
         \\        // cross-module wiring (e.g. registration callbacks).
-        \\        string LibDir = Path.Combine(ModuleDirectory, "lib");
-        \\        PublicRuntimeLibraryPaths.Add(LibDir);
+        \\        //
+        \\        // The .so/.dll lives in `<plugin>/Binaries/<Platform>/`,
+        \\        // i.e. the same directory as the editor module's own .so.
+        \\        // No PublicRuntimeLibraryPaths entry needed — `${{ORIGIN}}`
+        \\        // of the editor .so already covers the lib at runtime,
+        \\        // and that path is portable across project moves (unlike
+        \\        // PublicRuntimeLibraryPaths, which UBT bakes as an
+        \\        // absolute path into the RPATH and breaks on relocation).
         \\        if (Target.Platform == UnrealTargetPlatform.Linux)
         \\        {{
+        \\            string LibDir = Path.Combine(PluginDirectory, "Binaries", "Linux");
         \\            string SoPath = Path.Combine(LibDir, "lib{[slug]s}_dvui.so");
         \\            PublicAdditionalLibraries.Add(SoPath);
         \\            RuntimeDependencies.Add(SoPath);
         \\        }}
         \\        else if (Target.Platform == UnrealTargetPlatform.Win64)
         \\        {{
+        \\            string LibDir = Path.Combine(PluginDirectory, "Binaries", "Win64");
         \\            // Link against the import library (.lib) Zig emits
         \\            // alongside the .dll; the .dll itself is the runtime dep.
         \\            PublicAdditionalLibraries.Add(Path.Combine(LibDir, "{[slug]s}_dvui.lib"));
