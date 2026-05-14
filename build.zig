@@ -1,7 +1,7 @@
 // Top-level dvui-unreal Zig package.
 //
 // Consumers depend on this package and call `addUnrealPlugin` from their
-// own `build.zig` to generate a complete UE plugin directory containing:
+// own `build.zig` to generate a complete UE plugin containing:
 //   - the dvui-unreal C++ source tree (renamed/templated for the consumer)
 //   - the .uplugin manifest
 //   - the dvui Zig backend statically linked against the consumer's app,

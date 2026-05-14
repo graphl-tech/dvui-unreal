@@ -15,24 +15,19 @@ not been verified on this branch.
 ## Repo layout
 
 ```
-libs/dvui-unreal/
-├── DVUIUnreal.uplugin            # plugin manifest (LoadingPhase: PostConfigInit)
-├── Source/DVUIUnreal/            # the UE plugin module (C++)
-│   ├── Public/                   # DVUI.h (C ABI), UMG/Slate widget, renderer
-│   └── Private/                  # custom Slate element, shader, GC stubs
-├── Shaders/Private/DvuiShader.usf
-├── ThirdParty/
-│   ├── dvui-unreal-backend/      # Zig package — dvui.Backend implementation
-│   ├── dvui-unreal-sample-app/   # the default app linked into the .a
-│   └── TestProject/              # bare UE5 project that hosts the plugin
-└── scripts/                      # build / screenshot / bench harnesses
+build.zig[.zon]           # zig build system utils for building Unreal pluginsfrom DVUI apps
+unreal-plugin             # Unreal engine plugin
+dvui-unreal-backend/      # Zig package — dvui.Backend implementation
+dvui-unreal-sample-app/   # test app for test project
+TestProject/              # bare UE5 project that hosts the plugin for testing
+scripts/                  # scripts for development and testing
 ```
 
 ## Quick start (test project)
 
 ```bash
 # Build Zig backend (sample app) + UE editor module + run a headless
-# screenshot. The PNG lands in ThirdParty/TestProject/Saved/Screenshots/.
+# screenshot. The PNG lands in TestProject/Saved/Screenshots/.
 ./scripts/build-test.sh
 ./scripts/run-screenshot.sh
 ```
@@ -44,7 +39,7 @@ For an interactive window:
 # or, for the sample app:
 ./scripts/build-test.sh && \
   ~/.local/share/unreal/Engine/Binaries/Linux/UnrealEditor-Cmd \
-    ThirdParty/TestProject/DVUITest.uproject -game -windowed -preferNvidia
+    TestProject/DVUITest.uproject -game -windowed -preferNvidia
 ```
 
 `UNREAL_ENGINE` overrides the engine path (default `~/.local/share/unreal/Engine`).
@@ -117,7 +112,7 @@ runs the build and rsyncs the resulting tree into `<project>/Plugins/GraphlIde/`
 
 ### Bundled test project
 
-`ThirdParty/TestProject/` is a bare UE5 C++ project that consumes
+`/TestProject/` is a bare UE5 C++ project that consumes
 `libs/dvui-unreal/` directly via a `Plugins/DVUIUnreal` symlink (skipping
 `addUnrealPlugin` since it already IS the plugin tree). Use the scripts
 in `scripts/` (`build-test.sh`, `run-screenshot.sh`,
@@ -191,7 +186,7 @@ The bundled `ADVUITestGameMode` exposes flags for all of these (see
 ## C ABI
 
 Stable codes only — see `Source/DVUIUnreal/Public/DVUI.h`. dvui's own
-enums are translated to/from these inside `ThirdParty/dvui-unreal-backend/src/main.zig`,
+enums are translated to/from these inside `dvui-unreal-backend/src/main.zig`,
 so a dvui dependency bump can't silently change the wire format.
 
 The Zig side exports:
