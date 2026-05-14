@@ -9,13 +9,12 @@
             .path = "./dvui-unreal-backend",
         },
     },
-
-    // Files exposed to consumers via b.dependency().path("..."). The
-    // templating helper reads from Source/, Shaders/, and the .uplugin.
     .paths = .{
         "build.zig",
         "build.zig.zon",
         "dvui-unreal-backend",
+        // FIXME: remove need to keep this
+        "dvui-unreal-sample-app",
         "unreal-plugin",
     },
 }
