@@ -13,15 +13,14 @@ const std = @import("std");
 const dvui_unreal_backend = @import("dvui_unreal_backend");
 
 pub fn build(b: *std.Build) void {
-    // Helper-only package; nothing to build at this level. The bundled
-    // sample-app .a is built by ThirdParty/dvui-unreal-backend/. Accept
-    // (and ignore) the standard target/optimize options so consumers can
+    // Accept (and ignore) the standard target/optimize options so consumers can
     // pass them through `b.dependency("dvui_unreal", .{ .target, .optimize })`.
     _ = b.standardTargetOptions(.{});
     _ = b.standardOptimizeOption(.{});
 }
 
 pub const UnrealPluginOptions = struct {
+    // FIXME: can this be removed?
     /// Reference back to this package, obtained by the caller via
     /// `b.dependency("dvui_unreal", .{ .target = ..., .optimize = ... })`.
     /// Used to resolve our source files when called from a different
@@ -143,11 +142,11 @@ pub fn addUnrealPlugin(b: *std.Build, opts: UnrealPluginOptions) UnrealPlugin {
 
     // Public/
     const pub_files = [_]struct { src: []const u8, out_basename: []const u8, sub: bool }{
-        .{ .src = "Source/DVUIUnreal/Public/DVUI.h", .out_basename = "DVUI.h", .sub = true },
-        .{ .src = "Source/DVUIUnreal/Public/DVUIRenderer.h", .out_basename = b.fmt("{s}Renderer.h", .{module_name}), .sub = true },
-        .{ .src = "Source/DVUIUnreal/Public/DVUIUnrealModule.h", .out_basename = b.fmt("{s}Module.h", .{module_name}), .sub = true },
-        .{ .src = "Source/DVUIUnreal/Public/DVUIWidget.h", .out_basename = b.fmt("{s}.h", .{widget_class}), .sub = true },
-        .{ .src = "Source/DVUIUnreal/Public/SDVUIWidget.h", .out_basename = b.fmt("S{s}.h", .{widget_class}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Public/DVUI.h", .out_basename = "DVUI.h", .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Public/DVUIRenderer.h", .out_basename = b.fmt("{s}Renderer.h", .{module_name}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Public/DVUIUnrealModule.h", .out_basename = b.fmt("{s}Module.h", .{module_name}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Public/DVUIWidget.h", .out_basename = b.fmt("{s}.h", .{widget_class}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Public/SDVUIWidget.h", .out_basename = b.fmt("S{s}.h", .{widget_class}), .sub = true },
     };
     for (pub_files) |f| {
         addTemplated(b, dep, wf, .{
@@ -162,14 +161,14 @@ pub fn addUnrealPlugin(b: *std.Build, opts: UnrealPluginOptions) UnrealPlugin {
 
     // Private/
     const priv_files = [_]struct { src: []const u8, out_basename: []const u8, sub: bool }{
-        .{ .src = "Source/DVUIUnreal/Private/CompilerRtStubs.cpp", .out_basename = "CompilerRtStubs.cpp", .sub = false },
-        .{ .src = "Source/DVUIUnreal/Private/DVUIRenderer.cpp", .out_basename = b.fmt("{s}Renderer.cpp", .{module_name}), .sub = true },
-        .{ .src = "Source/DVUIUnreal/Private/DVUIUnrealModule.cpp", .out_basename = b.fmt("{s}Module.cpp", .{module_name}), .sub = true },
-        .{ .src = "Source/DVUIUnreal/Private/DVUIWidget.cpp", .out_basename = b.fmt("{s}.cpp", .{widget_class}), .sub = true },
-        .{ .src = "Source/DVUIUnreal/Private/DvuiCustomElement.h", .out_basename = "DvuiCustomElement.h", .sub = false },
-        .{ .src = "Source/DVUIUnreal/Private/DvuiCustomElement.cpp", .out_basename = "DvuiCustomElement.cpp", .sub = false },
-        .{ .src = "Source/DVUIUnreal/Private/DvuiShader.h", .out_basename = "DvuiShader.h", .sub = false },
-        .{ .src = "Source/DVUIUnreal/Private/DvuiShader.cpp", .out_basename = "DvuiShader.cpp", .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/CompilerRtStubs.cpp", .out_basename = "CompilerRtStubs.cpp", .sub = false },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DVUIRenderer.cpp", .out_basename = b.fmt("{s}Renderer.cpp", .{module_name}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DVUIUnrealModule.cpp", .out_basename = b.fmt("{s}Module.cpp", .{module_name}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DVUIWidget.cpp", .out_basename = b.fmt("{s}.cpp", .{widget_class}), .sub = true },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DvuiCustomElement.h", .out_basename = "DvuiCustomElement.h", .sub = false },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DvuiCustomElement.cpp", .out_basename = "DvuiCustomElement.cpp", .sub = false },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DvuiShader.h", .out_basename = "DvuiShader.h", .sub = false },
+        .{ .src = "unreal-plugin/Source/DVUIUnreal/Private/DvuiShader.cpp", .out_basename = "DvuiShader.cpp", .sub = true },
     };
     for (priv_files) |f| {
         addTemplated(b, dep, wf, .{
@@ -184,7 +183,7 @@ pub fn addUnrealPlugin(b: *std.Build, opts: UnrealPluginOptions) UnrealPlugin {
 
     // Private/Widgets/S<WidgetClass>.cpp
     addTemplated(b, dep, wf, .{
-        .src = "Source/DVUIUnreal/Private/Widgets/SDVUIWidget.cpp",
+        .src = "unreal-plugin/Source/DVUIUnreal/Private/Widgets/SDVUIWidget.cpp",
         .out = b.fmt("Source/{s}/Private/Widgets/S{s}.cpp", .{ module_name, widget_class }),
         .module_name = module_name,
         .module_upper = module_upper,
@@ -194,7 +193,7 @@ pub fn addUnrealPlugin(b: *std.Build, opts: UnrealPluginOptions) UnrealPlugin {
 
     // Shader (verbatim).
     addTemplated(b, dep, wf, .{
-        .src = "Shaders/Private/DvuiShader.usf",
+        .src = "unreal-plugin/Shaders/Private/DvuiShader.usf",
         .out = "Shaders/Private/DvuiShader.usf",
         .module_name = module_name,
         .module_upper = module_upper,

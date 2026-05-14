@@ -6,7 +6,7 @@
 
     .dependencies = .{
         .dvui_unreal_backend = .{
-            .path = "./ThirdParty/dvui-unreal-backend",
+            .path = "./dvui-unreal-backend",
         },
     },
 
