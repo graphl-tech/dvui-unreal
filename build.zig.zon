@@ -15,8 +15,7 @@
     .paths = .{
         "build.zig",
         "build.zig.zon",
-        "DVUIUnreal.uplugin",
-        "Source",
-        "Shaders",
+        "dvui-unreal-backend",
+        "unreal-plugin",
     },
 }
