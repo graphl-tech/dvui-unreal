@@ -169,7 +169,25 @@ export fn dvui_event_key(self: *UnrealBackend, key: c_int, pressed: c_int, mods:
 
 export fn dvui_event_text(self: *UnrealBackend, utf8: [*]const u8, len: u32) void {
     const win = if (self.window) |*w| w else return;
-    _ = win.addEventText(.{ .text = utf8[0..len] }) catch {};
+    const text = utf8[0..len];
+    // Unreal's Slate delivers control codes (backspace 0x08, delete 0x7F,
+    // tab, enter, escape) through its character/text events; the OS
+    // text-input APIs other dvui backends use never do — they surface those
+    // only as key events. dvui doesn't filter text it's handed, so an
+    // unprintable codepoint would render as a "tofu" box. Strip ASCII
+    // control chars and forward only the printable runs. UTF-8 multi-byte
+    // sequences are all >= 0x80, so this never splits a codepoint.
+    var i: usize = 0;
+    while (i < text.len) {
+        while (i < text.len and isControlByte(text[i])) i += 1;
+        const start = i;
+        while (i < text.len and !isControlByte(text[i])) i += 1;
+        if (i > start) _ = win.addEventText(.{ .text = text[start..i] }) catch {};
+    }
+}
+
+fn isControlByte(b: u8) bool {
+    return b < 0x20 or b == 0x7F;
 }
 
 export fn dvui_text_input_active(self: *UnrealBackend) c_int {
