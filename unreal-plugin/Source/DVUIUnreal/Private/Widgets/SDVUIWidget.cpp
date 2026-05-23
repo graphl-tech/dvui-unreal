@@ -423,8 +423,15 @@ FReply SDVUIWidget::OnKeyChar(const FGeometry&, const FCharacterEvent& InCharact
 	if (DVUIRenderer.IsValid())
 	{
 		const TCHAR Ch = InCharacterEvent.GetCharacter();
-		const FString Text(1, &Ch);
-		DVUIRenderer->SendText(Text);
+		// Slate delivers control codes (backspace 0x08, tab, enter, escape,
+		// delete 0x7F) as character events too. dvui handles those via key
+		// events; if we forwarded them as text it would render the
+		// unprintable codepoint as a "tofu" box. Only forward real text.
+		if (Ch >= 0x20 && Ch != 0x7F)
+		{
+			const FString Text(1, &Ch);
+			DVUIRenderer->SendText(Text);
+		}
 		return FReply::Handled();
 	}
 	return FReply::Unhandled();

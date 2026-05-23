@@ -158,16 +158,14 @@ pub fn destroy(self: *UnrealBackend) void {
     self.parent_allocator.destroy(self);
 }
 
-/// Run a full frame: begin → user app → end. Sets dvui.current_window so
-/// the app's `frame()` can use dvui APIs that rely on the global. App can
-/// expose either `pub fn frame() !void` or `pub fn frame(*dvui.Window) !void`
-/// (we detect at comptime).
+/// Run a full frame: begin → user app → end. `begin()`/`end()` manage
+/// dvui.current_window themselves (begin saves the previous and installs
+/// self, end restores it), so the app's `frame()` can use dvui APIs that
+/// rely on the global without us touching it here. App can expose either
+/// `pub fn frame() !void` or `pub fn frame(*dvui.Window) !void` (we detect
+/// at comptime).
 pub fn renderFrame(self: *UnrealBackend) void {
     var win = &(self.window orelse return);
-
-    const prev_current = dvui.current_window;
-    dvui.current_window = win;
-    defer dvui.current_window = prev_current;
 
     win.begin(self.nanoTime()) catch return;
 
