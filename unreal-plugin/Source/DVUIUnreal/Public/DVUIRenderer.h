@@ -14,9 +14,12 @@ class UTexture2D;
 /**
  * Bridges the Zig DVUI backend with the Slate widget(s) that paint it.
  *
- * One renderer per process: it owns the dvui.Window and the texture cache.
- * Multiple SDVUIWidget instances may share it (the active one is set per
- * BeginFrame), but dvui itself only supports a single window.
+ * Owns one dvui.Window (and one app instance) plus the texture cache. Each
+ * UDVUIWidget creates and owns its own renderer so DVUI state is isolated
+ * per widget instance; the module also keeps a shared singleton renderer for
+ * the non-UMG GameMode path. Multiple SDVUIWidget instances may share a
+ * renderer (the active one is set per BeginFrame), but a single renderer
+ * drives a single dvui.Window.
  */
 class DVUIUNREAL_API FDVUIRenderer : public TSharedFromThis<FDVUIRenderer>, public FGCObject
 {
