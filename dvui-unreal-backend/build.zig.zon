@@ -6,8 +6,7 @@
 
     .dependencies = .{
         .dvui = .{
-            .url = "git+https://github.com/david-vanderson/dvui#10a89cc95c5a465502548e44d98ab13bf74cfbae",
-            .hash = "dvui-0.5.0-dev-AQFJmScK3wCUBv_XTLkIbB0TGlRTk3_1DDbSgmyPMRt6",
+            .path = "../../dvui",
         },
         .dvui_unreal_sample_app = .{
             .path = "../dvui-unreal-sample-app",
