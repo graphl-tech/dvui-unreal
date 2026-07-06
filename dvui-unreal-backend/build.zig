@@ -102,7 +102,7 @@ pub fn buildBackendLib(b: *std.Build, opts: BackendLibOptions) *std.Build.Step.C
         .use_llvm = opts.use_llvm,
         .linkage = opts.linkage,
     });
-    lib.linkLibC();
+    lib.root_module.link_libc = true;
     // Bundle compiler_rt / ubsan: the consumer (Unreal) doesn't provide
     // f128 ops (`__divtf3` etc.) or ubsan helpers; without these we get
     // undefined references at link time.

@@ -256,7 +256,7 @@ fn addTemplated(
     t: TemplateOpts,
 ) void {
     const max_size: usize = 4 * 1024 * 1024; // 4 MiB safety cap
-    const bytes = dep.builder.build_root.handle.readFileAlloc(b.allocator, t.src, max_size) catch |err| std.debug.panic("dvui_unreal: failed to read template '{s}': {s}", .{ t.src, @errorName(err) });
+    const bytes = dep.builder.build_root.handle.readFileAlloc(dep.builder.graph.io, t.src, b.allocator, .limited(max_size)) catch |err| std.debug.panic("dvui_unreal: failed to read template '{s}': {s}", .{ t.src, @errorName(err) });
 
     const out_text: []const u8 = if (t.substitute) blk: {
         // Apply in this order — longest-first so longer identifiers don't

@@ -6,8 +6,8 @@
 
     .dependencies = .{
         .dvui = .{
-            .url = "git+https://github.com/foxnne/dvui-dev#35ab51f4c37516184a87776f4f1ed009d0ac3f69",
-            .hash = "dvui-0.4.0-dev-AQFJmQkJ3wB-HYXnyWyjvckSRyYAtk8DavH0le0Ykg2K",
+            .url = "git+https://github.com/david-vanderson/dvui#10a89cc95c5a465502548e44d98ab13bf74cfbae",
+            .hash = "dvui-0.5.0-dev-AQFJmScK3wCUBv_XTLkIbB0TGlRTk3_1DDbSgmyPMRt6",
         },
         .dvui_unreal_sample_app = .{
             .path = "../dvui-unreal-sample-app",
