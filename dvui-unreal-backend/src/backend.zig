@@ -194,7 +194,7 @@ pub fn nanoTime(self: *UnrealBackend) i128 {
     if (self.callbacks.get_time_ns) |get_time| {
         return @intCast(get_time(self.unreal_ctx));
     }
-    return std.time.nanoTimestamp();
+    return @as(i128, std.Io.Clock.boot.now(std.Io.Threaded.global_single_threaded.io()).nanoseconds);
 }
 
 pub fn sleep(_: *UnrealBackend, _: u64) void {}
