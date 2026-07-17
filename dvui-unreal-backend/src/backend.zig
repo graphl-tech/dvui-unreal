@@ -271,7 +271,9 @@ pub fn drawClippedTriangles(
     );
 }
 
-pub fn textureCreate(self: *UnrealBackend, pixels: [*]const u8, w: u32, h: u32, _: dvui.enums.TextureInterpolation, format: dvui.enums.TexturePixelFormat) !dvui.Texture {
+pub fn textureCreate(self: *UnrealBackend, pixels: [*]const u8, opts: dvui.Texture.CreateOptions) !dvui.Texture {
+    const w = opts.width;
+    const h = opts.height;
     const size = w * h * 4;
     const stored = try self.allocator.alloc(u8, size);
     @memcpy(stored, pixels[0..size]);
@@ -296,7 +298,7 @@ pub fn textureCreate(self: *UnrealBackend, pixels: [*]const u8, w: u32, h: u32, 
         create_cb(self.unreal_ctx, id, stored.ptr, w, h);
     }
 
-    return .{ .ptr = @ptrFromInt(id), .width = w, .height = h, .format = format };
+    return .{ .ptr = @ptrFromInt(id), .width = w, .height = h, .format = opts.format, .interpolation = opts.interpolation, .wrap_u = opts.wrap_u, .wrap_v = opts.wrap_v };
 }
 
 pub fn textureDestroy(self: *UnrealBackend, texture: dvui.Texture) void {
@@ -309,7 +311,7 @@ pub fn textureDestroy(self: *UnrealBackend, texture: dvui.Texture) void {
     }
 }
 
-pub fn textureCreateTarget(_: *UnrealBackend, _: u32, _: u32, _: dvui.enums.TextureInterpolation, _: dvui.enums.TexturePixelFormat) !dvui.TextureTarget {
+pub fn textureCreateTarget(_: *UnrealBackend, _: dvui.Texture.CreateOptions) !dvui.TextureTarget {
     return error.TextureCreate;
 }
 
@@ -322,11 +324,11 @@ pub fn textureClearTarget(_: *UnrealBackend, _: dvui.TextureTarget) void {}
 pub fn textureDestroyTarget(_: *UnrealBackend, _: dvui.Texture.Target) void {}
 
 pub fn textureFromTarget(_: *UnrealBackend, target: dvui.TextureTarget) !dvui.Texture {
-    return .{ .ptr = target.ptr, .width = target.width, .height = target.height, .format = target.format };
+    return .{ .ptr = target.ptr, .width = target.width, .height = target.height, .format = target.format, .interpolation = target.interpolation, .wrap_u = target.wrap_u, .wrap_v = target.wrap_v };
 }
 
 pub fn textureFromTargetTemp(_: *UnrealBackend, target: dvui.TextureTarget) !dvui.Texture {
-    return .{ .ptr = target.ptr, .width = target.width, .height = target.height, .format = target.format };
+    return .{ .ptr = target.ptr, .width = target.width, .height = target.height, .format = target.format, .interpolation = target.interpolation, .wrap_u = target.wrap_u, .wrap_v = target.wrap_v };
 }
 
 pub fn renderTarget(_: *UnrealBackend, _: ?dvui.TextureTarget) !void {}
@@ -354,6 +356,21 @@ pub fn preferredColorScheme(_: *UnrealBackend) ?dvui.enums.ColorScheme {
 }
 
 pub fn refresh(_: *UnrealBackend) void {}
+
+pub fn setCursor(_: *UnrealBackend, _: dvui.enums.Cursor) void {}
+
+pub fn textInputRect(_: *UnrealBackend, _: ?dvui.Rect.Natural) void {}
+
+pub fn renderPresent(_: *UnrealBackend) void {}
+
+/// Interface teardown for the `dvui.osWindow` path (not the C-ABI path,
+/// which uses `destroy`). Frees owned resources but not `self`, since the
+/// caller (`OsWindowWidget`) destroys the backend pointer itself.
+pub fn deinit(self: *UnrealBackend) void {
+    if (self.window) |*w| w.deinit();
+    self.tex_table.deinit(self.parent_allocator);
+    self.arena.deinit();
+}
 
 pub fn backend(self: *UnrealBackend) dvui.Backend {
     return dvui.Backend.init(self);

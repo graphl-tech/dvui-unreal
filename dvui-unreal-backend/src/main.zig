@@ -153,8 +153,8 @@ export fn dvui_event_mouse_button(self: *UnrealBackend, button: c_int, pressed: 
 
 export fn dvui_event_mouse_wheel(self: *UnrealBackend, dx: f32, dy: f32) void {
     const win = if (self.window) |*w| w else return;
-    if (dy != 0) _ = win.addEventMouseWheel(dy, .vertical) catch {};
-    if (dx != 0) _ = win.addEventMouseWheel(dx, .horizontal) catch {};
+    if (dy != 0) _ = win.addEventMouseWheel(dy, .vertical, null) catch {};
+    if (dx != 0) _ = win.addEventMouseWheel(dx, .horizontal, null) catch {};
 }
 
 export fn dvui_event_key(self: *UnrealBackend, key: c_int, pressed: c_int, mods: c_int) void {
