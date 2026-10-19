@@ -115,15 +115,15 @@ fn mapKey(k: c_int) ?dvui.enums.Key {
         else => blk: {
             if (k >= KEY_F1 and k <= KEY_F1 + 11) {
                 const f_idx = k - KEY_F1;
-                break :blk @as(dvui.enums.Key, @enumFromInt(@intFromEnum(dvui.enums.Key.f1) + @as(u32, @intCast(f_idx))));
+                break :blk @as(dvui.enums.Key, @fromBackingInt(@intCast(@backingInt(dvui.enums.Key.f1) + @as(u32, @intCast(f_idx)))));
             }
             if (k >= KEY_A_BASE and k < KEY_A_BASE + 26) {
                 const letter_idx = k - KEY_A_BASE;
-                break :blk @as(dvui.enums.Key, @enumFromInt(@intFromEnum(dvui.enums.Key.a) + @as(u32, @intCast(letter_idx))));
+                break :blk @as(dvui.enums.Key, @fromBackingInt(@intCast(@backingInt(dvui.enums.Key.a) + @as(u32, @intCast(letter_idx)))));
             }
             if (k >= KEY_NUM_BASE and k < KEY_NUM_BASE + 10) {
                 const digit_idx = k - KEY_NUM_BASE;
-                break :blk @as(dvui.enums.Key, @enumFromInt(@intFromEnum(dvui.enums.Key.zero) + @as(u32, @intCast(digit_idx))));
+                break :blk @as(dvui.enums.Key, @fromBackingInt(@intCast(@backingInt(dvui.enums.Key.zero) + @as(u32, @intCast(digit_idx)))));
             }
             break :blk null;
         },
@@ -132,11 +132,11 @@ fn mapKey(k: c_int) ?dvui.enums.Key {
 
 fn mapMods(m: c_int) dvui.enums.Mod {
     var bits: u16 = 0;
-    if (m & MOD_SHIFT != 0) bits |= @intFromEnum(dvui.enums.Mod.lshift);
-    if (m & MOD_CTRL != 0) bits |= @intFromEnum(dvui.enums.Mod.lcontrol);
-    if (m & MOD_ALT != 0) bits |= @intFromEnum(dvui.enums.Mod.lalt);
-    if (m & MOD_CMD != 0) bits |= @intFromEnum(dvui.enums.Mod.lcommand);
-    return @enumFromInt(bits);
+    if (m & MOD_SHIFT != 0) bits |= @backingInt(dvui.enums.Mod.lshift);
+    if (m & MOD_CTRL != 0) bits |= @backingInt(dvui.enums.Mod.lcontrol);
+    if (m & MOD_ALT != 0) bits |= @backingInt(dvui.enums.Mod.lalt);
+    if (m & MOD_CMD != 0) bits |= @backingInt(dvui.enums.Mod.lcommand);
+    return @fromBackingInt(@intCast(bits));
 }
 
 export fn dvui_event_mouse_motion(self: *UnrealBackend, x: f32, y: f32) void {
@@ -197,7 +197,7 @@ export fn dvui_text_input_active(self: *UnrealBackend) c_int {
 
 export fn dvui_cursor_requested(self: *UnrealBackend) c_int {
     const win = if (self.window) |*w| w else return 0;
-    return @intFromEnum(win.cursorRequested());
+    return @backingInt(win.cursorRequested());
 }
 
 /// Notify the dvui window that the host is closing — gives widgets a chance

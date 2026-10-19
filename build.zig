@@ -215,17 +215,10 @@ pub fn addUnrealPlugin(b: *std.Build, opts: UnrealPluginOptions) UnrealPlugin {
         .install_subdir = subdir,
     });
 
-    const top = b.allocator.create(std.Build.Step) catch @panic("OOM");
-    top.* = std.Build.Step.init(.{
-        .id = .custom,
-        .name = b.fmt("unreal-plugin ({s})", .{module_name}),
-        .owner = b,
-    });
-    top.dependOn(&install_lib.step);
-    top.dependOn(&install_tree.step);
+    install_tree.step.dependOn(&install_lib.step);
 
     return .{
-        .step = top,
+        .step = &install_tree.step,
         .lib = lib,
         .install_subdir = subdir,
         .module_name = module_name,
@@ -256,7 +249,9 @@ fn addTemplated(
     t: TemplateOpts,
 ) void {
     const max_size: usize = 4 * 1024 * 1024; // 4 MiB safety cap
-    const bytes = dep.builder.build_root.handle.readFileAlloc(dep.builder.graph.io, t.src, b.allocator, .limited(max_size)) catch |err| std.debug.panic("dvui_unreal: failed to read template '{s}': {s}", .{ t.src, @errorName(err) });
+    b.dependOnFileContents(dep.path(t.src));
+    const src_path = dep.builder.root.joinString(b.allocator, t.src) catch @panic("OOM");
+    const bytes = std.Io.Dir.cwd().readFileAlloc(b.graph.io, src_path, b.allocator, .limited(max_size)) catch |err| std.debug.panic("dvui_unreal: failed to read template '{s}': {s}", .{ t.src, @errorName(err) });
 
     const out_text: []const u8 = if (t.substitute) blk: {
         // Apply in this order — longest-first so longer identifiers don't

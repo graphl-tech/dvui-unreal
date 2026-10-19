@@ -2,7 +2,7 @@
     .name = .dvui_unreal,
     .version = "0.1.0",
     .fingerprint = 0x1af546caae312a65,
-    .minimum_zig_version = "0.13.0",
+    .minimum_zig_version = "0.17.0",
 
     .dependencies = .{
         .dvui_unreal_backend = .{

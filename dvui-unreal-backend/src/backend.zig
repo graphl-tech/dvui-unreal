@@ -123,12 +123,11 @@ pub fn create(allocator: std.mem.Allocator, unreal_ctx: *UnrealContext, callback
         dvui.current_window = &self.window.?;
         defer dvui.current_window = prev_current;
 
-        const res: anyerror!void = if (init_info.params.len == 1)
+        const res: anyerror!void = if (init_info.param_types.len == 1)
             app.init(&self.window.?)
-        else if (init_info.params.len == 0)
+        else if (init_info.param_types.len == 0)
             app.init()
-        else
-            {};
+        else {};
 
         res catch |err| {
             std.log.err("dvui app init failed: {}", .{err});
@@ -174,13 +173,13 @@ pub fn renderFrame(self: *UnrealBackend) void {
     const has_error_return = @typeInfo(frame_info.return_type.?) == .error_union;
 
     if (has_error_return) {
-        if (frame_info.params.len == 1) {
+        if (frame_info.param_types.len == 1) {
             app.frame(win) catch |err| std.log.err("dvui app frame failed: {}", .{err});
         } else {
             app.frame() catch |err| std.log.err("dvui app frame failed: {}", .{err});
         }
     } else {
-        if (frame_info.params.len == 1) app.frame(win) else app.frame();
+        if (frame_info.param_types.len == 1) app.frame(win) else app.frame();
     }
 
     _ = win.end(.{}) catch return;
@@ -242,7 +241,7 @@ pub fn drawClippedTriangles(
             .y = v.pos.y,
             .u = v.uv[0],
             .v = v.uv[1],
-            .color = @bitCast(v.col),
+            .color = std.mem.bytesToValue(u32, std.mem.asBytes(&v.col)),
         };
     }
 

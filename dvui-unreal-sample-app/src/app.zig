@@ -51,14 +51,14 @@ pub fn frame(win: *dvui.Window) void {
         defer hbox.deinit();
 
         const icon_pairs = [_]struct { name: []const u8, bytes: []const u8 }{
-            .{ .name = "menu",        .bytes = entypo.menu },
-            .{ .name = "magnify",     .bytes = entypo.magnifying_glass },
-            .{ .name = "plus",        .bytes = entypo.plus },
-            .{ .name = "minus",       .bytes = entypo.minus },
-            .{ .name = "cog",         .bytes = entypo.cog },
-            .{ .name = "save",        .bytes = entypo.save },
-            .{ .name = "folder",      .bytes = entypo.folder },
-            .{ .name = "trash",       .bytes = entypo.trash },
+            .{ .name = "menu", .bytes = entypo.menu },
+            .{ .name = "magnify", .bytes = entypo.magnifying_glass },
+            .{ .name = "plus", .bytes = entypo.plus },
+            .{ .name = "minus", .bytes = entypo.minus },
+            .{ .name = "cog", .bytes = entypo.cog },
+            .{ .name = "save", .bytes = entypo.save },
+            .{ .name = "folder", .bytes = entypo.folder },
+            .{ .name = "trash", .bytes = entypo.trash },
         };
         for (icon_pairs) |ip| {
             if (dvui.buttonIcon(@src(), ip.name, ip.bytes, .{}, .{}, .{
@@ -92,19 +92,19 @@ pub fn frame(win: *dvui.Window) void {
     var rect_box = dvui.box(@src(), .{}, .{
         .min_size_content = .{ .w = 320, .h = 80 },
         .background = true,
-        .color_fill = clickColor(click_count),
+        .color_fill = .{ .color = clickColor(click_count) },
     });
     defer rect_box.deinit();
 }
 
 fn clickColor(n: u32) dvui.Color {
     const palette = [_]dvui.Color{
-        .{ .r = 200, .g = 50,  .b = 50,  .a = 255 },
-        .{ .r = 50,  .g = 200, .b = 50,  .a = 255 },
-        .{ .r = 50,  .g = 50,  .b = 200, .a = 255 },
-        .{ .r = 200, .g = 200, .b = 50,  .a = 255 },
-        .{ .r = 50,  .g = 200, .b = 200, .a = 255 },
-        .{ .r = 200, .g = 50,  .b = 200, .a = 255 },
+        .{ .r = 200, .g = 50, .b = 50, .a = 255 },
+        .{ .r = 50, .g = 200, .b = 50, .a = 255 },
+        .{ .r = 50, .g = 50, .b = 200, .a = 255 },
+        .{ .r = 200, .g = 200, .b = 50, .a = 255 },
+        .{ .r = 50, .g = 200, .b = 200, .a = 255 },
+        .{ .r = 200, .g = 50, .b = 200, .a = 255 },
     };
     return palette[n % palette.len];
 }
